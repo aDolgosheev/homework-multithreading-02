@@ -8,57 +8,32 @@ public class Main {
 
         List<Thread> threads = new ArrayList<>();
 
-        new Thread(() -> {
-            String route = generateRoute("RLRFR", 100);
-            int rCounter = 0;
-            for (int j = 0; j < route.length(); j++) {
-                if (route.charAt(j) == 'R') {
-                    rCounter++;
-                } else {
-                    if (rCounter != 0) {
-                        synchronized (sizeToFreq) {
-                            if (sizeToFreq.containsKey(rCounter)) {
-                                sizeToFreq.put(rCounter, sizeToFreq.get(rCounter) + 1);
-                            } else {
-                                sizeToFreq.put(rCounter, 1);
-                            }
-                            rCounter = 0;
-                        }
+        for (int i = 0; i < 1000; i++) {
+            threads.add(new Thread(() -> {
+                String route = generateRoute("RLRFR", 100);
+                int rCounter = 0;
+                for (int j = 0; j < route.length(); j++) {
+                    if (route.charAt(j) == 'R') {
+                        rCounter++;
                     }
                 }
-            }
-        }).start();
+                synchronized (sizeToFreq) {
+                    if (sizeToFreq.containsKey(rCounter)) {
+                        sizeToFreq.put(rCounter, sizeToFreq.get(rCounter) + 1);
+                    } else {
+                        sizeToFreq.put(rCounter, 1);
+                    }
+                }
+            }));
+        }
 
-//        for (int i = 0; i < 1000; i++) {
-//            threads.add(new Thread(() -> {
-//                String route = generateRoute("RLRFR", 100);
-//                int rCounter = 0;
-//                for (int j = 0; j < route.length(); j++) {
-//                    if (route.charAt(j) == 'R') {
-//                        rCounter++;
-//                    } else {
-//                        if (rCounter > 1) {
-//                            synchronized (sizeToFreq) {
-//                                if (sizeToFreq.containsKey(rCounter)) {
-//                                    sizeToFreq.put(rCounter, sizeToFreq.get(rCounter) + 1);
-//                                } else {
-//                                    sizeToFreq.put(rCounter, 1);
-//                                }
-//                                rCounter = 0;
-//                            }
-//                        }
-//                    }
-//                }
-//            }));
-//        }
-//
-//        for (Thread thread : threads) {
-//            thread.start();
-//        }
-//
-//        for (Thread thread : threads) {
-//            thread.join();
-//        }
+        for (Thread thread : threads) {
+            thread.start();
+        }
+
+        for (Thread thread : threads) {
+            thread.join();
+        }
 
         Map.Entry<Integer, Integer> maxEntry = null;
         for (Map.Entry<Integer, Integer> entry : sizeToFreq.entrySet()) {
@@ -75,7 +50,6 @@ public class Main {
         }
 
     }
-
 
     public static String generateRoute(String letters, int length) {
         Random random = new Random();
